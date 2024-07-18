@@ -1,5 +1,10 @@
 use std::fmt::Display;
 
+///
+/// ```plaintext
+/// Tuning ----------------> Chord -------> Note
+///         common_chord()
+/// ```
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 #[derive(PartialEq)]
@@ -106,11 +111,56 @@ impl Display for Chord {
     }
 }
 
+impl Chord {
+    pub fn breakdown(&self, octave: u8) -> Vec<Note> {
+        match self.tonality {
+            Tonality::Major => {
+                vec![
+                    Note { chord: self.tuning, octave, duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(2), octave, duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(4), octave, duration: 0.5, velocity: 0.5 },
+                ]
+            }
+            Tonality::Minor => {
+                vec![
+                    Note { chord: self.tuning, octave, duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(2), octave, duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(4), octave, duration: 0.5, velocity: 0.5 },
+                ]
+            }
+            _ => vec![]
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+struct Note {
+    chord: Tuning,
+    octave: u8,
+    duration: f32,
+    velocity: f32,
+}
+
+impl Display for Note {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let chord_str = self.chord.to_string();
+        let octave_str = self.octave.to_string();
+
+        write!(f, "{}{}", chord_str, octave_str)
+    }
+}
+
 fn main() {
     let chord = Tuning::C;
 
     for degree in 1..=6 {
         println!("{:?}", chord.common_chord(degree).to_string());
+    }
+
+    let notes = Tuning::C.common_chord(2).breakdown(4);
+
+    for note in notes {
+        println!("{}", note.to_string());
     }
 }
 
