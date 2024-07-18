@@ -4,6 +4,7 @@ use std::fmt::Display;
 #[repr(u8)]
 #[derive(PartialEq)]
 enum Tuning {
+    None = 0,
     C = 1,
     D = 2,
     E = 3,
@@ -30,8 +31,10 @@ impl From<u8> for Tuning {
 
 impl Tuning {
     pub fn modulation(&self, degree: i8) -> Tuning {
-        let value = ((*self as i8 - 1 + 7 + degree) % 7 + 1) as u8;
-        Tuning::from(value)
+        match self {
+            Tuning::None => { Tuning::None }
+            _ => Tuning::from(((*self as i8 - 1 + 7 + degree) % 7 + 1) as u8)
+        }
     }
 
     pub fn common_chord(&self, degree: u8) -> Note {
@@ -57,6 +60,7 @@ impl Display for Tuning {
             Tuning::G => "G",
             Tuning::A => "A",
             Tuning::B => "B",
+            Tuning::None => " "
         }.to_string();
         write!(f, "{}", str)
     }
@@ -126,5 +130,7 @@ mod tests {
         assert_eq!(Tuning::C.modulation(-2), Tuning::A);
         assert_eq!(Tuning::C.modulation(7), Tuning::C);
         assert_eq!(Tuning::C.modulation(-7), Tuning::C);
+        assert_eq!(Tuning::C.modulation(0), Tuning::C);
+        assert_eq!(Tuning::None.modulation(1), Tuning::None);
     }
 }
