@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 #[derive(PartialEq)]
@@ -41,7 +43,22 @@ impl Tuning {
             _ => panic!("Invalid degree"),
         };
 
-        Note { tuning: new_tuning, tonality }
+        Note { tuning: new_tuning, tonality, octave: 4, ..Default::default() }
+    }
+}
+
+impl Display for Tuning {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            Tuning::C => "C",
+            Tuning::D => "D",
+            Tuning::E => "E",
+            Tuning::F => "F",
+            Tuning::G => "G",
+            Tuning::A => "A",
+            Tuning::B => "B",
+        }.to_string();
+        write!(f, "{}", str)
     }
 }
 
@@ -61,13 +78,41 @@ enum Tonality {
 struct Note {
     tuning: Tuning,
     tonality: Tonality,
+    octave: u8,
+    duration: f64,
+    velocity: u8,
+}
+
+impl Default for Note {
+    fn default() -> Self {
+        Note {
+            tuning: Tuning::C,
+            tonality: Tonality::Major,
+            octave: 4,
+            duration: 0.25,
+            velocity: 60,
+        }
+    }
+}
+
+impl Display for Note {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let tuning_str = self.tuning.to_string();
+        let tonality_str = match self.tonality {
+            Tonality::Major => "",
+            Tonality::Minor => "m",
+            _ => "?"
+        };
+
+        write!(f, "{}", format!("{}{}", tuning_str, tonality_str))
+    }
 }
 
 fn main() {
     let chord = Tuning::C;
 
-    for degree in 1..6 {
-        println!("{:?}", chord.common_chord(degree));
+    for degree in 1..=6 {
+        println!("{:?}", chord.common_chord(degree).to_string());
     }
 }
 
