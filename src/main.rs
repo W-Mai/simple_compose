@@ -2,8 +2,8 @@ use std::fmt::Display;
 
 ///
 /// ```plaintext
-/// Tuning ----------------> Chord -------> Note
-///         common_chord()
+/// Tuning ----------------> Chord -------------> Note
+///         common_chord()          breakdown()
 /// ```
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
@@ -113,19 +113,24 @@ impl Display for Chord {
 
 impl Chord {
     pub fn breakdown(&self, octave: u8) -> Vec<Note> {
+        fn octave_eval(octave: u8, base_degree: Tuning, delta_degree: i8) -> u8 {
+            let new_degree = base_degree as i8 + delta_degree;
+            (octave as i8 + new_degree / 7 + (new_degree % 7 != 0) as i8 - 1) as u8
+        }
+
         match self.tonality {
             Tonality::Major => {
                 vec![
                     Note { chord: self.tuning, octave, duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(2), octave, duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(4), octave, duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(2), octave: octave_eval(octave, self.tuning, 2), duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(4), octave: octave_eval(octave, self.tuning, 4), duration: 0.5, velocity: 0.5 },
                 ]
             }
             Tonality::Minor => {
                 vec![
                     Note { chord: self.tuning, octave, duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(2), octave, duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(4), octave, duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(2), octave: octave_eval(octave, self.tuning, 2), duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(4), octave: octave_eval(octave, self.tuning, 4), duration: 0.5, velocity: 0.5 },
                 ]
             }
             _ => vec![]
@@ -154,13 +159,13 @@ fn main() {
     let chord = Tuning::C;
 
     for degree in 1..=6 {
-        println!("{:?}", chord.common_chord(degree).to_string());
+        println!("{}", chord.common_chord(degree));
     }
 
-    let notes = Tuning::C.common_chord(2).breakdown(4);
+    let notes = Tuning::C.common_chord(6).breakdown(4);
 
     for note in notes {
-        println!("{}", note.to_string());
+        println!("{}", note);
     }
 }
 
