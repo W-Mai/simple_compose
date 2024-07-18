@@ -37,7 +37,7 @@ impl Tuning {
         }
     }
 
-    pub fn common_chord(&self, degree: u8) -> Note {
+    pub fn common_chord(&self, degree: u8) -> Chord {
         assert!(degree > 0 && degree < 8, "Degree must be in [1, 6]");
         let new_tuning = self.modulation((degree - 1) as i8);
         let tonality = match degree {
@@ -46,7 +46,7 @@ impl Tuning {
             _ => panic!("Invalid degree"),
         };
 
-        Note { tuning: new_tuning, tonality, octave: 4, ..Default::default() }
+        Chord { tuning: new_tuning, tonality }
     }
 }
 
@@ -79,27 +79,21 @@ enum Tonality {
 
 #[derive(Copy, Clone, Debug)]
 #[derive(PartialEq)]
-struct Note {
+struct Chord {
     tuning: Tuning,
     tonality: Tonality,
-    octave: u8,
-    duration: f64,
-    velocity: u8,
 }
 
-impl Default for Note {
+impl Default for Chord {
     fn default() -> Self {
-        Note {
+        Chord {
             tuning: Tuning::C,
             tonality: Tonality::Major,
-            octave: 4,
-            duration: 0.25,
-            velocity: 60,
         }
     }
 }
 
-impl Display for Note {
+impl Display for Chord {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let tuning_str = self.tuning.to_string();
         let tonality_str = match self.tonality {
