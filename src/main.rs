@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use rand::prelude::*;
 
 ///
 /// ```plaintext
@@ -155,17 +156,76 @@ impl Display for Note {
     }
 }
 
-fn main() {
-    let chord = Tuning::C;
-
-    for degree in 1..=6 {
-        println!("{}", chord.common_chord(degree));
+impl Note {
+    pub fn with_duration(self, duration: f32) -> Note {
+        Note {
+            chord: self.chord,
+            octave: self.octave,
+            duration,
+            velocity: self.velocity,
+        }
     }
 
-    let notes = Tuning::C.common_chord(6).breakdown(4);
+    pub fn with_velocity(self, velocity: f32) -> Note {
+        Note {
+            chord: self.chord,
+            octave: self.octave,
+            duration: self.duration,
+            velocity,
+        }
+    }
+}
 
-    for note in notes {
-        println!("{}", note);
+// 按照 1/32 1/16 1/8 1/4 1/2 1 2 4 的时值随机生成一个时值序列，并保证生成的时值序列长度为 4
+fn generate_duration() -> Vec<f32> {
+    let mut durations = vec![];
+    let mut rng = thread_rng();
+    let mut duration_sum = 0.0;
+    while duration_sum < 4.0 {
+        let duration = match rng.gen_range(2..6) {
+            0 => 1.0 / 32.0,
+            1 => 1.0 / 16.0,
+            2 => 1.0 / 8.0,
+            3 => 1.0 / 4.0,
+            4 => 1.0 / 2.0,
+            5 => 1.0,
+            6 => 2.0,
+            7 => 4.0,
+            _ => { unreachable!(); }
+        };
+        if duration_sum + duration > 4.0 {
+            break;
+        }
+        duration_sum += duration;
+        durations.push(duration);
+    }
+
+    let remainder = duration_sum - 4.0;
+    if remainder > 0.0 {
+        durations.push(remainder);
+    }
+    durations
+}
+fn main() {
+    let tuning = Tuning::from(1);
+    let chords = vec![
+        tuning.common_chord(1),
+        tuning.common_chord(6),
+        tuning.common_chord(4),
+        tuning.common_chord(5),
+    ];
+
+    let mut rng = thread_rng();
+
+    for chord in chords {
+        let notes = chord.breakdown(4);
+        let durations = generate_duration();
+        for duration in durations {
+            let note = notes.choose(&mut rng).unwrap().clone();
+            let note = note.with_duration(duration);
+            print!("{}[{}] ", note, duration);
+        }
+        println!("|");
     }
 }
 

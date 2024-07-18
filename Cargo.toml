@@ -2,6 +2,7 @@
 name = "simple_compose"
 version = "0.1.0"
 edition = "2021"
-authors = [ "Benign X <1341398182@qq.com>" ]
+authors = ["Benign X <1341398182@qq.com>"]
 
 [dependencies]
+rand = "0.8.5"
