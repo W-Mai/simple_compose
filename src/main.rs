@@ -31,6 +31,18 @@ impl Tuning {
         let value = ((*self as i8 - 1 + 7 + degree) % 7 + 1) as u8;
         Tuning::from(value)
     }
+
+    pub fn common_chord(&self, degree: u8) -> Note {
+        assert!(degree > 0 && degree < 8, "Degree must be in [1, 6]");
+        let new_tuning = self.modulation((degree - 1) as i8);
+        let tonality = match degree {
+            1 | 4 | 5 => Tonality::Major,
+            2 | 3 | 6 => Tonality::Minor,
+            _ => panic!("Invalid degree"),
+        };
+
+        Note { tuning: new_tuning, tonality }
+    }
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -52,9 +64,11 @@ struct Note {
 }
 
 fn main() {
-    let a = Tuning::C;
-    let b = a.modulation(-1);
-    println!("{:?}", b);
+    let chord = Tuning::C;
+
+    for degree in 1..6 {
+        println!("{:?}", chord.common_chord(degree));
+    }
 }
 
 #[cfg(test)]
