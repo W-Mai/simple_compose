@@ -33,6 +33,24 @@ impl Tuning {
     }
 }
 
+#[derive(Copy, Clone, Debug)]
+#[repr(u8)]
+#[derive(PartialEq)]
+enum Tonality {
+    Major,
+    Minor,
+    Diminished,
+    Augmented,
+    Perfect,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[derive(PartialEq)]
+struct Note {
+    tuning: Tuning,
+    tonality: Tonality,
+}
+
 fn main() {
     let a = Tuning::C;
     let b = a.modulation(-1);
