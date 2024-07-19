@@ -63,11 +63,11 @@ impl Tuning {
 
     pub fn next_basic_degree(&self, nth: i8) -> Tuning {
         let nth = nth.rem_euclid(7) as usize;
-        let basic_degrees = vec![1, 3, 5, 6, 8, 10, 12];
+        let basic_degrees = vec![0, 2, 4, 5, 7, 9, 11];
 
         match self {
             Tuning::None => Tuning::C,
-            _ => Tuning::from(basic_degrees[nth])
+            _ => Tuning::from((*self as i8 + basic_degrees[nth] - 1).rem_euclid(12) as u8 + 1)
         }
     }
 }
