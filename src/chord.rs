@@ -6,7 +6,7 @@ use crate::tuning::Tuning;
 #[derive(Copy, Clone, Debug)]
 #[derive(PartialEq)]
 pub struct Chord {
-    pub(crate) tuning: Tuning,
+    pub tuning: Tuning,
     pub tonality: Tonality,
 }
 

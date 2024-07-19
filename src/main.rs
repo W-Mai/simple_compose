@@ -42,7 +42,7 @@ fn generate_duration() -> Vec<f32> {
 ///         common_chord()          breakdown()
 /// ```
 fn main() {
-    let tuning = Tuning::from(1);
+    let tuning = Tuning::C;
     let chords = vec![
         tuning.common_chord(1),
         tuning.common_chord(6),
