@@ -112,16 +112,7 @@ fn main() {
                 let note = note.with_duration(duration);
                 print!("{}[{}] ", note, duration);
 
-                play_note(match note.chord {
-                    Tuning::None => 0,
-                    Tuning::C => 1,
-                    Tuning::D => 3,
-                    Tuning::E => 5,
-                    Tuning::F => 6,
-                    Tuning::G => 8,
-                    Tuning::A => 10,
-                    Tuning::B => 11,
-                } + (note.octave + 1) * 12 - 1, (duration * 8.0) as u64)
+                play_note(note.chord as u8 + (note.octave + 1) * 12 - 1, (duration * 8.0) as u64)
             }
             println!("|");
         }

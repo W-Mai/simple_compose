@@ -43,15 +43,15 @@ impl Chord {
             Tonality::Major => {
                 vec![
                     Note { chord: self.tuning, octave, duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(2), octave: octave_eval(octave, self.tuning, 2), duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(4), octave: octave_eval(octave, self.tuning, 4), duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(4), octave: octave_eval(octave, self.tuning, 2), duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(7), octave: octave_eval(octave, self.tuning, 4), duration: 0.5, velocity: 0.5 },
                 ]
             }
             Tonality::Minor => {
                 vec![
                     Note { chord: self.tuning, octave, duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(2), octave: octave_eval(octave, self.tuning, 2), duration: 0.5, velocity: 0.5 },
-                    Note { chord: self.tuning.modulation(4), octave: octave_eval(octave, self.tuning, 4), duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(3), octave: octave_eval(octave, self.tuning, 2), duration: 0.5, velocity: 0.5 },
+                    Note { chord: self.tuning.modulation(7), octave: octave_eval(octave, self.tuning, 4), duration: 0.5, velocity: 0.5 },
                 ]
             }
             _ => vec![]
