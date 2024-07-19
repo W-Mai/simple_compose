@@ -51,7 +51,7 @@ impl Tuning {
 
     pub fn common_chord(&self, degree: u8) -> Chord {
         assert!(degree > 0 && degree < 7, "Degree must be in [1, 6]");
-        let new_tuning = self.modulation((degree - 1) as i8);
+        let new_tuning = self.next_basic_degree((degree - 1) as i8);
         let tonality = match degree {
             1 | 4 | 5 => Tonality::Major,
             2 | 3 | 6 => Tonality::Minor,
@@ -59,6 +59,16 @@ impl Tuning {
         };
 
         Chord { tuning: new_tuning, tonality }
+    }
+
+    pub fn next_basic_degree(&self, nth: i8) -> Tuning {
+        let nth = nth.rem_euclid(7) as usize;
+        let basic_degrees = vec![1, 3, 5, 6, 8, 10, 12];
+
+        match self {
+            Tuning::None => Tuning::C,
+            _ => Tuning::from(basic_degrees[nth])
+        }
     }
 }
 
