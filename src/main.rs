@@ -98,9 +98,13 @@ fn main() {
         const VELOCITY: u8 = 0x64;
         // We're ignoring errors in here
         if let Some(conn_out) = conn_out.as_mut() {
-            let _ = conn_out.send(&[NOTE_ON_MSG, note, VELOCITY]);
+            let _ = conn_out.send(&[NOTE_ON_MSG | 0, note, VELOCITY]);
+            let _ = conn_out.send(&[NOTE_ON_MSG | 1, note + 4, VELOCITY]);
+            let _ = conn_out.send(&[NOTE_ON_MSG | 2, note + 7, VELOCITY]);
             sleep(Duration::from_millis(duration * 80));
-            let _ = conn_out.send(&[NOTE_OFF_MSG, note, VELOCITY]);
+            let _ = conn_out.send(&[NOTE_OFF_MSG | 0, note, VELOCITY]);
+            let _ = conn_out.send(&[NOTE_OFF_MSG | 1, note + 4, VELOCITY]);
+            let _ = conn_out.send(&[NOTE_OFF_MSG | 2, note + 7, VELOCITY]);
         }
     };
     {
