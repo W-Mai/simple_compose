@@ -9,13 +9,16 @@ pub struct MidiPlayer {
 
 impl MidiPlayer {
     pub fn new(name: &str) -> Self {
-        let midi_out = MidiOutput::new(name).ok();
-        MidiPlayer {
+        let mut midi_player = MidiPlayer {
             name: name.to_owned(),
-            midi_out,
+            midi_out: None,
             port: None,
             midi_out_conn: None,
-        }
+        };
+
+        let midi_out = MidiOutput::new(&midi_player.name).ok();
+        midi_player.midi_out = midi_out;
+        midi_player
     }
 
     pub fn list_ports(&self) -> Vec<String> {
@@ -83,5 +86,11 @@ impl MidiPlayer {
                 self.midi_out = Some(conn.close());
             }
         }
+    }
+}
+
+impl Drop for MidiPlayer {
+    fn drop(&mut self) {
+        self.close();
     }
 }
