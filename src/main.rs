@@ -72,10 +72,15 @@ fn main() {
             let note = note.with_duration(duration);
             print!("{}[{}] ", note, duration);
 
-            let note = note.tuning as u8 + (note.octave + 1) * 12 - 1;
-            midi_player.play(note);
+            fn to_midi(note: &Note) -> u8 {
+                note.tuning as u8 + (note.octave + 1) * 12 - 1
+            }
+
+            let notes = note.tuning.common_chord(1).breakdown(note.octave).iter().map(to_midi).collect::<Vec<_>>();
+
+            midi_player.play_notes(&notes);
             sleep(Duration::from_millis((duration * 80.0 * 8.0) as u64));
-            midi_player.stop(note);
+            midi_player.stop_notes(&notes);
         }
         println!("|");
     }

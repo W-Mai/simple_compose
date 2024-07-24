@@ -61,22 +61,28 @@ impl MidiPlayer {
         }
     }
 
-    pub fn play(&mut self, note: u8) {
-        match &mut self.midi_out_conn {
-            None => {}
-            Some(conn) => {
-                let _ = conn.send(&[0x90, note, 0x64]);
+    pub fn play_notes(&mut self, notes: &[u8]) {
+        if let Some(conn) = &mut self.midi_out_conn {
+            for (index, note) in notes.iter().enumerate() {
+                let _ = conn.send(&[0x90 | index as u8, *note, 0x64]);
             }
         }
     }
 
-    pub fn stop(&mut self, note: u8) {
-        match &mut self.midi_out_conn {
-            None => {}
-            Some(conn) => {
-                let _ = conn.send(&[0x80, note, 0x64]);
+    pub fn stop_notes(&mut self, notes: &[u8]) {
+        if let Some(conn) = &mut self.midi_out_conn {
+            for (index, note) in notes.iter().enumerate() {
+                let _ = conn.send(&[0x80 | index as u8, *note, 0x64]);
             }
         }
+    }
+
+    pub fn play_note(&mut self, note: u8) {
+        self.play_notes(&[note]);
+    }
+
+    pub fn stop_note(&mut self, note: u8) {
+        self.stop_notes(&[note]);
     }
 
     pub fn close(&mut self) {
