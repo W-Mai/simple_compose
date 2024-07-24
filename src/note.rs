@@ -1,9 +1,9 @@
-use std::fmt::Display;
 use crate::tuning::Tuning;
+use std::fmt::Display;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Note {
-    pub chord: Tuning,
+    pub tuning: Tuning,
     pub octave: u8,
     pub(crate) duration: f32,
     pub(crate) velocity: f32,
@@ -11,7 +11,7 @@ pub struct Note {
 
 impl Display for Note {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let chord_str = self.chord.to_string();
+        let chord_str = self.tuning.to_string();
         let octave_str = self.octave.to_string();
 
         write!(f, "{}{}", chord_str, octave_str)
@@ -21,7 +21,7 @@ impl Display for Note {
 impl Note {
     pub fn with_duration(self, duration: f32) -> Note {
         Note {
-            chord: self.chord,
+            tuning: self.tuning,
             octave: self.octave,
             duration,
             velocity: self.velocity,
@@ -30,7 +30,7 @@ impl Note {
 
     pub fn with_velocity(self, velocity: f32) -> Note {
         Note {
-            chord: self.chord,
+            tuning: self.tuning,
             octave: self.octave,
             duration: self.duration,
             velocity,

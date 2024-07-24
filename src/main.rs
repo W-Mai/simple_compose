@@ -72,7 +72,7 @@ fn main() {
             let note = note.with_duration(duration);
             print!("{}[{}] ", note, duration);
 
-            let note = note.chord as u8 + (note.octave + 1) * 12 - 1;
+            let note = note.tuning as u8 + (note.octave + 1) * 12 - 1;
             midi_player.play(note);
             sleep(Duration::from_millis((duration * 80.0 * 8.0) as u64));
             midi_player.stop(note);
