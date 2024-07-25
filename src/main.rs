@@ -41,18 +41,9 @@ fn generate_duration() -> Vec<f32> {
 ///         common_chord()          breakdown()
 /// ```
 fn main() {
-    let tuning = Tuning::CSharpOrDFlat;
-    let chords = vec![
-        tuning.common_chord(1),
-        tuning.common_chord(6),
-        tuning.common_chord(4),
-        tuning.common_chord(5),
-        tuning.common_chord(1),
-        tuning.common_chord(6),
-        tuning.common_chord(4),
-        tuning.common_chord(5),
-        tuning.common_chord(1),
-    ];
+    let tuning = Tuning::C;
+    let chords = [1, 6, 4, 5];
+    let chords = chords.map(|degree| tuning.common_chord(degree));
 
     let mut rng = thread_rng();
 
