@@ -4,6 +4,12 @@ use std::time::Duration;
 
 use simple_compose::*;
 
+macro_rules! degrees {
+    ($($degree:expr)*) => {
+        [$($degree),*]
+    };
+}
+
 // 按照 1/32 1/16 1/8 1/4 1/2 1 2 4 的时值随机生成一个时值序列，并保证生成的时值序列长度为 4
 fn generate_duration() -> Vec<f32> {
     let mut durations = vec![];
