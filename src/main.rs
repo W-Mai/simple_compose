@@ -48,8 +48,8 @@ fn generate_duration() -> Vec<f32> {
 /// ```
 fn main() {
     let tuning = Tuning::C;
-    let chords = [1, 6, 4, 5];
-    let chords = chords.map(|degree| tuning.common_chord(degree));
+    let deg = degrees!(1 1 4 5 1 4);
+    let chords = deg.map(|degree| tuning.common_chord(degree));
 
     let mut rng = thread_rng();
 
