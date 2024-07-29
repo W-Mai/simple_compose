@@ -76,7 +76,7 @@ impl From<&Duration> for f64 {
 
 impl From<f32> for Duration {
     fn from(value: f32) -> Self {
-        let duration = (6.0 * value) as u16;
+        let duration = (6.0 / value) as u16;
         Duration::from(duration)
     }
 }
