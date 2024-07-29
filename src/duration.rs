@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 ///
 /// Duration represents the length of a note.
 ///
@@ -162,6 +164,31 @@ impl std::ops::AddAssign<f32> for Duration {
 impl std::ops::AddAssign<f64> for Duration {
     fn add_assign(&mut self, rhs: f64) {
         *self = Duration::from(f64::from(*self) + rhs);
+    }
+}
+
+impl Display for Duration {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let duration_str = match self {
+            Duration::Whole => "Whole",
+            Duration::Half => "½",
+            Duration::Quarter => "¼",
+            Duration::Eighth => "Eighth",
+            Duration::Sixteenth => "Sixteenth",
+            Duration::ThirtySecond => "ThirtySecond",
+            Duration::SixtyFourth => "SixtyFourth",
+            Duration::HundredTwentyEighth => "HundredTwentyEighth",
+            Duration::WholeDotted => "WholeDotted",
+            Duration::HalfDotted => "HalfDotted",
+            Duration::QuarterDotted => "QuarterDotted",
+            Duration::EighthDotted => "EighthDotted",
+            Duration::SixteenthDotted => "SixteenthDotted",
+            Duration::ThirtySecondDotted => "ThirtySecondDotted",
+            Duration::SixtyFourthDotted => "SixtyFourthDotted",
+            Duration::HundredTwentyEighthDotted => "HundredTwentyEighthDotted",
+        };
+
+        write!(f, "{}", duration_str)
     }
 }
 
