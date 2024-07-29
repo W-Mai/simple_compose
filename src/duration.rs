@@ -62,6 +62,18 @@ impl From<Duration> for f64 {
     }
 }
 
+impl From<&Duration> for f32 {
+    fn from(duration: &Duration) -> f32 {
+        f32::from(*duration)
+    }
+}
+
+impl From<&Duration> for f64 {
+    fn from(duration: &Duration) -> f64 {
+        f64::from(*duration)
+    }
+}
+
 impl From<f32> for Duration {
     fn from(value: f32) -> Self {
         let duration = (6.0 * value) as u16;
@@ -83,6 +95,76 @@ impl std::ops::Add<Duration> for Duration {
     }
 }
 
+impl std::ops::Add<f32> for Duration {
+    type Output = f32;
+
+    fn add(self, rhs: f32) -> Self::Output {
+        f32::from(self) + rhs
+    }
+}
+
+impl std::ops::Add<f64> for Duration {
+    type Output = f64;
+
+    fn add(self, rhs: f64) -> Self::Output {
+        f64::from(self) + rhs
+    }
+}
+
+impl std::ops::Add<Duration> for f32 {
+    type Output = f32;
+
+    fn add(self, rhs: Duration) -> Self::Output {
+        self + f32::from(rhs)
+    }
+}
+
+impl std::ops::Add<Duration> for f64 {
+    type Output = f64;
+
+    fn add(self, rhs: Duration) -> Self::Output {
+        self + f64::from(rhs)
+    }
+}
+
+impl std::ops::Add<&Duration> for f64 {
+    type Output = f64;
+
+    fn add(self, rhs: &Duration) -> Self::Output {
+        self + f64::from(rhs)
+    }
+}
+
+impl std::ops::AddAssign<Duration> for f32 {
+    fn add_assign(&mut self, rhs: Duration) {
+        *self += f32::from(rhs);
+    }
+}
+
+impl std::ops::AddAssign<Duration> for f64 {
+    fn add_assign(&mut self, rhs: Duration) {
+        *self += f64::from(rhs);
+    }
+}
+
+impl std::ops::AddAssign<&Duration> for f64 {
+    fn add_assign(&mut self, rhs: &Duration) {
+        *self += f64::from(rhs);
+    }
+}
+
+impl std::ops::AddAssign<f32> for Duration {
+    fn add_assign(&mut self, rhs: f32) {
+        *self = Duration::from(f32::from(*self) + rhs);
+    }
+}
+
+impl std::ops::AddAssign<f64> for Duration {
+    fn add_assign(&mut self, rhs: f64) {
+        *self = Duration::from(f64::from(*self) + rhs);
+    }
+}
+
 impl Duration {
     pub fn with_dot(&self) -> Duration {
         match self {
@@ -96,5 +178,33 @@ impl Duration {
             Duration::HundredTwentyEighth => Duration::HundredTwentyEighthDotted,
             _ => *self,
         }
+    }
+}
+
+pub mod duration_utils {
+    use super::Duration;
+    use rand::prelude::*;
+
+    pub fn generate_one_measure(beat: u8) -> Vec<Duration> {
+        let beat = beat as f64;
+        let mut durations = vec![];
+        let mut rng = thread_rng();
+        let mut duration_sum = 0.0;
+        while duration_sum < beat {
+            let duration = *[Duration::Half, Duration::Quarter]
+                .choose(&mut rng)
+                .unwrap();
+            if duration_sum + duration > beat {
+                break;
+            }
+            duration_sum += duration;
+            durations.push(duration);
+        }
+
+        let remainder = beat - duration_sum;
+        if remainder > 0.0 {
+            durations.push(remainder.into());
+        }
+        durations
     }
 }
