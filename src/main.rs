@@ -10,37 +10,6 @@ macro_rules! degrees {
     };
 }
 
-// 按照 1/32 1/16 1/8 1/4 1/2 1 2 4 的时值随机生成一个时值序列，并保证生成的时值序列长度为 4
-fn generate_duration() -> Vec<f32> {
-    let mut durations = vec![];
-    let mut rng = thread_rng();
-    let mut duration_sum = 0.0;
-    while duration_sum < 4.0 {
-        let duration = match rng.gen_range(3..=5) {
-            0 => 1.0 / 32.0,
-            1 => 1.0 / 16.0,
-            2 => 1.0 / 8.0,
-            3 => 1.0 / 4.0,
-            4 => 1.0 / 2.0,
-            5 => 1.0,
-            6 => 2.0,
-            7 => 4.0,
-            _ => unreachable!(),
-        };
-        if duration_sum + duration > 4.0 {
-            break;
-        }
-        duration_sum += duration;
-        durations.push(duration);
-    }
-
-    let remainder = duration_sum - 4.0;
-    if remainder > 0.0 {
-        durations.push(remainder);
-    }
-    durations
-}
-
 ///
 /// ```plaintext
 /// Tuning ----------------> Chord -------------> Note
@@ -63,8 +32,9 @@ fn main() {
 
     for chord in chords {
         let notes = chord.breakdown(4);
-        let durations = generate_duration();
+        let durations = duration_utils::generate_one_measure(4);
         for duration in durations {
+            let duration = duration.into();
             let note = notes.choose(&mut rng).unwrap().clone();
             let note = note.with_duration(duration);
             print!("{}[{}] ", note, duration);
