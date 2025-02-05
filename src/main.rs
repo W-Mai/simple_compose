@@ -34,9 +34,9 @@ fn main() {
         let notes = chord.breakdown(4);
         let durations = duration_utils::generate_one_measure(4);
         for duration in durations {
-            let duration = duration.into();
+            let duration_value = duration.clone().into();
             let note = notes.choose(&mut rng).unwrap().clone();
-            let note = note.with_duration(duration);
+            let note = note.with_duration(duration_value);
             print!("{}[{}] ", note, duration);
 
             if need_play {
@@ -53,7 +53,7 @@ fn main() {
                     .collect::<Vec<_>>();
 
                 midi_player.play_notes(&notes);
-                sleep(Duration::from_millis((duration * 80.0 * 8.0) as u64));
+                sleep(Duration::from_millis((duration_value * 80.0 * 8.0) as u64));
                 midi_player.stop_notes(&notes);
             }
         }
