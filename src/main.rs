@@ -37,7 +37,8 @@ fn main() {
             let duration_value = duration.clone().into();
             let note = notes.choose(&mut rng).unwrap().clone();
             let note = note.with_duration(duration_value);
-            print!("{}[{}] ", note, duration);
+            let s = format!("{}[{}]", note, duration);
+            print!("{} ", s);
 
             if need_play {
                 fn to_midi(note: &Note) -> u8 {
