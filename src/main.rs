@@ -12,13 +12,13 @@ macro_rules! degrees {
 
 ///
 /// ```plaintext
-/// Tuning ----------------> Chord -------------> Note
+/// PitchClass ----------------> Chord -------------> Note
 ///         common_chord()          breakdown()
 /// ```
 fn main() {
-    let tuning = Tuning::C;
+    let pitch_class = PitchClass::C;
     let deg = degrees!(1 1 4 5 1 4);
-    let chords = deg.map(|degree| tuning.common_chord(degree));
+    let chords = deg.map(|degree| pitch_class.common_chord(degree));
 
     let mut rng = thread_rng();
 
@@ -42,11 +42,11 @@ fn main() {
 
             if need_play {
                 fn to_midi(note: &Note) -> u8 {
-                    note.tuning as u8 + (note.octave + 1) * 12 - 1
+                    note.pitch_class as u8 + (note.octave + 1) * 12 - 1
                 }
 
                 let notes = note
-                    .tuning
+                    .pitch_class
                     .common_chord(1)
                     .breakdown(note.octave)
                     .iter()
