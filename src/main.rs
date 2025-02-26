@@ -31,7 +31,16 @@ fn main() {
     }
 
     for chord in chords {
-        let notes = chord.breakdown(4);
+        let notes = chord
+            .components()
+            .iter()
+            .map(|note| Note {
+                pitch_class,
+                octave: note.octave as u8,
+                duration: 0.0,
+                velocity: 0.0,
+            })
+            .collect::<Vec<_>>();
         let durations = duration_utils::generate_one_measure(4);
         for duration in durations {
             let duration_value = duration.clone().into();
@@ -48,9 +57,9 @@ fn main() {
                 let notes = note
                     .pitch_class
                     .common_chord(1)
-                    .breakdown(note.octave)
+                    .components()
                     .iter()
-                    .map(to_midi)
+                    .map(|x| x.midi_number().unwrap())
                     .collect::<Vec<_>>();
 
                 midi_player.play_notes(&notes);
