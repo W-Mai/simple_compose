@@ -18,7 +18,7 @@ macro_rules! degrees {
 fn main() {
     let pitch_class = PitchClass::C;
     let deg = degrees!(1 1 4 5 1 4);
-    let chords = deg.map(|degree| pitch_class.common_chord(degree));
+    let chords = deg.map(|degree| pitch_class.common_chord(degree, 4));
 
     let mut rng = thread_rng();
 
@@ -36,7 +36,7 @@ fn main() {
             .iter()
             .map(|note| Note {
                 pitch_class,
-                octave: note.octave as u8,
+                octave: note.octave,
                 duration: 0.0,
                 velocity: 0.0,
             })
@@ -50,13 +50,9 @@ fn main() {
             print!("{} ", s);
 
             if need_play {
-                fn to_midi(note: &Note) -> u8 {
-                    note.pitch_class as u8 + (note.octave + 1) * 12 - 1
-                }
-
                 let notes = note
                     .pitch_class
-                    .common_chord(1)
+                    .common_chord(1, note.octave)
                     .components()
                     .iter()
                     .map(|x| x.midi_number().unwrap())
