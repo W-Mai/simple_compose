@@ -17,7 +17,7 @@ macro_rules! degrees {
 /// ```
 fn main() {
     let pitch_class = PitchClass::C;
-    let deg = degrees!(1 1 4 5 1 4);
+    let deg = degrees!(1 6 4 5 1 6 4 5 1 6 4 5);
     let chords = deg.map(|degree| pitch_class.common_chord(degree, 4));
 
     let mut rng = thread_rng();
@@ -31,37 +31,44 @@ fn main() {
     }
 
     for chord in chords {
-        let notes = chord
+        let chord_notes = chord
             .components()
             .iter()
             .map(|note| Note {
-                pitch_class,
+                pitch_class: note.class,
                 octave: note.octave,
                 duration: 0.0,
                 velocity: 0.0,
             })
             .collect::<Vec<_>>();
+
+        let chord_notes_midi = chord
+            .components()
+            .iter()
+            .map(|x| x.midi_number().unwrap())
+            .collect::<Vec<_>>();
+        if need_play {
+            midi_player.play_notes(&chord_notes_midi);
+        }
         let durations = duration_utils::generate_one_measure(4);
         for duration in durations {
             let duration_value = duration.clone().into();
-            let note = notes.choose(&mut rng).unwrap().clone();
+            let note = chord_notes.choose(&mut rng).unwrap().clone();
             let note = note.with_duration(duration_value);
             let s = format!("{}[{}]", note, duration);
             print!("{} ", s);
 
             if need_play {
-                let notes = note
-                    .pitch_class
-                    .common_chord(1, note.octave)
-                    .components()
-                    .iter()
-                    .map(|x| x.midi_number().unwrap())
-                    .collect::<Vec<_>>();
-
-                midi_player.play_notes(&notes);
+                let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
+                    .midi_number()
+                    .unwrap()];
+                midi_player.play_notes(&tuning_midi);
                 sleep(Duration::from_millis((duration_value * 80.0 * 8.0) as u64));
-                midi_player.stop_notes(&notes);
+                midi_player.stop_notes(&tuning_midi);
             }
+        }
+        if need_play {
+            midi_player.stop_notes(&chord_notes_midi);
         }
         println!("|");
     }
