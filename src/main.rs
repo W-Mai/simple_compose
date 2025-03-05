@@ -45,7 +45,7 @@ fn main() {
         let chord_notes_midi = chord
             .components()
             .iter()
-            .map(|x| x.midi_number().unwrap())
+            .map(|x| x.midi_number().unwrap() - 12 * 2)
             .collect::<Vec<_>>();
         if need_play {
             midi_player.play_notes(&chord_notes_midi);
