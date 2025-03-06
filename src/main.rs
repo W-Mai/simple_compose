@@ -16,9 +16,9 @@ macro_rules! degrees {
 ///         common_chord()          breakdown()
 /// ```
 fn main() {
-    let pitch_class = PitchClass::G;
+    let pitch_class = PitchClass::C;
     let deg = degrees!(1 5 6 3 4 1 4 5);
-    let chords = deg.map(|degree| pitch_class.common_chord(degree, 4));
+    let chords = deg.map(|degree| pitch_class.common_chord(degree, 2));
 
     let mut rng = thread_rng();
 
@@ -46,7 +46,7 @@ fn main() {
             let chord_notes_midi = chord
                 .components()
                 .iter()
-                .map(|x| x.midi_number().unwrap() - 12 * 2)
+                .map(|x| x.midi_number().unwrap() - 12 * 1)
                 .collect::<Vec<_>>();
             if need_play {
                 midi_player.play_notes(2, &chord_notes_midi);
@@ -63,9 +63,9 @@ fn main() {
                     let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
                         .midi_number()
                         .unwrap()];
-                    // midi_player.play_notes(1, &tuning_midi);
-                    sleep(Duration::from_millis((duration_value * 80.0 * 4.0) as u64));
-                    // midi_player.stop_notes(1, &tuning_midi);
+                    midi_player.play_notes(1, &tuning_midi);
+                    sleep(Duration::from_millis((duration_value * 80.0 * 8.0) as u64));
+                    midi_player.stop_notes(1, &tuning_midi);
                 }
             }
             if need_play {
