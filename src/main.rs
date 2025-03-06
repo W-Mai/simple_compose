@@ -63,9 +63,9 @@ fn main() {
                     let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
                         .midi_number()
                         .unwrap()];
-                    midi_player.play_notes(1, &tuning_midi);
+                    // midi_player.play_notes(1, &tuning_midi);
                     sleep(Duration::from_millis((duration_value * 80.0 * 4.0) as u64));
-                    midi_player.stop_notes(1, &tuning_midi);
+                    // midi_player.stop_notes(1, &tuning_midi);
                 }
             }
             if need_play {
