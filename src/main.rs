@@ -10,28 +10,25 @@ macro_rules! degrees {
     };
 }
 
+struct Measure {
+    chord: Chord,
+    chord_notes: Vec<Tuning>,
+    rhythm_notes: Vec<Note>,
+}
+
 ///
 /// ```plaintext
 /// PitchClass ----------------> Chord -------------> Note
 ///         common_chord()          breakdown()
 /// ```
 fn main() {
-    let pitch_class = PitchClass::C;
-    let deg = degrees!(1 5 6 3 4 1 4 5);
+    let pitch_class = PitchClass::DSharpOrEFlat;
+    let deg = degrees!(1 1 4 5 1 4 1);
     let chords = deg.map(|degree| pitch_class.common_chord(degree, 3));
 
     let mut rng = thread_rng();
 
-    let mut midi_player = MidiPlayer::new("Simple Compose");
-    let ports = midi_player.list_ports();
-    let mut channels = None;
-    let need_play = ports.len() > 0;
-    if need_play {
-        midi_player.select_port(0).unwrap();
-        channels.replace(midi_player.connect("Simple Compose Port 0").unwrap());
-    }
-
-    for chord in chords.clone() {
+    let measures = chords.map(|chord| {
         let chord_notes = chord
             .components()
             .iter()
@@ -43,36 +40,73 @@ fn main() {
             })
             .collect::<Vec<_>>();
 
-        let chord_notes_midi = chord
-            .components()
-            .iter()
-            .map(|x| x.midi_number().unwrap() + 12 * 1)
-            .collect::<Vec<_>>();
-        if let Some(channels) = channels.as_mut() {
-            channels[2].play_notes(&chord_notes_midi);
-        }
+        let chord_tunings = chord.components();
+
         let durations = duration_utils::generate_one_measure(1);
-        for duration in durations {
+        let note_iter = durations.iter().map(|duration| {
             let duration_value = duration.clone().into();
             let note = chord_notes.choose(&mut rng).unwrap().clone();
-            let note = note.with_duration(duration_value);
-            let s = format!("{}[{}]", note, duration);
-            print!("{} ", s);
+            note.with_duration(duration_value)
+        });
 
-            if let Some(channels) = channels.as_mut() {
-                let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
-                    .midi_number()
-                    .unwrap()];
-                channels[1].play_notes(&tuning_midi);
-                sleep(Duration::from_millis((duration_value * 80.0 * 32.0) as u64));
-                channels[1].stop_notes(&tuning_midi);
-            }
+        Measure {
+            chord: chord.clone(),
+            chord_notes: chord_tunings,
+            rhythm_notes: note_iter.collect(),
         }
-        if let Some(channels) = channels.as_mut() {
-            channels[2].stop_notes(&chord_notes_midi);
-        }
-        println!("|");
+    });
+
+    let mut midi_player = MidiPlayer::new("Simple Compose");
+    let ports = midi_player.list_ports();
+    let need_play = ports.len() > 0;
+    if need_play {
+        midi_player.select_port(0).unwrap();
+        let channels = &mut midi_player.connect("Simple Compose Port 0").unwrap();
+        let mut ch_chords = channels[0].borrow_mut();
+        let mut ch_rhythm = channels[1].borrow_mut();
+
+        measures.iter().for_each(
+            |Measure {
+                 chord,
+                 chord_notes,
+                 rhythm_notes,
+             }| {
+                print!("{} {:?} | ", chord_notes[0].class, chord.quality());
+                let chord_notes_midi = chord_notes
+                    .iter()
+                    .map(|x| x.midi_number().unwrap() - 12 * 1)
+                    .collect::<Vec<u8>>();
+                ch_chords.play_notes(&chord_notes_midi);
+                rhythm_notes.iter().for_each(|note| {
+                    let s = format!("{}[{}]", note, note.duration);
+                    print!("{} ", s);
+                    let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
+                        .midi_number()
+                        .unwrap()];
+                    ch_rhythm.play_notes(&tuning_midi);
+                    sleep(Duration::from_millis((note.duration * 80.0 * 32.0) as u64));
+                    ch_rhythm.stop_notes(&tuning_midi);
+                });
+                ch_chords.stop_notes(&chord_notes_midi);
+
+                println!("|");
+            },
+        );
+    } else {
+        measures.iter().for_each(
+            |Measure {
+                 chord,
+                 chord_notes,
+                 rhythm_notes,
+             }| {
+                print!("{} {:?} | ", chord_notes[0].class, chord.quality());
+                rhythm_notes.iter().for_each(|note| {
+                    let s = format!("{}[{}]", note, note.duration);
+                    print!("{} ", s);
+                });
+                println!("|");
+            },
+        );
     }
-
     midi_player.close();
 }
