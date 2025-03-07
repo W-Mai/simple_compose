@@ -24,10 +24,11 @@ fn main() {
 
     let mut midi_player = MidiPlayer::new("Simple Compose");
     let ports = midi_player.list_ports();
+    let mut channels = None;
     let need_play = ports.len() > 0;
     if need_play {
         midi_player.select_port(0).unwrap();
-        midi_player.connect("Simple Compose Port 0").unwrap();
+        channels.replace(midi_player.connect("Simple Compose Port 0").unwrap());
     }
 
     for chord in chords.clone() {
@@ -47,8 +48,8 @@ fn main() {
             .iter()
             .map(|x| x.midi_number().unwrap() + 12 * 1)
             .collect::<Vec<_>>();
-        if need_play {
-            midi_player.play_notes(2, &chord_notes_midi);
+        if let Some(channels) = channels.as_mut() {
+            channels[2].play_notes(&chord_notes_midi);
         }
         let durations = duration_utils::generate_one_measure(1);
         for duration in durations {
@@ -58,17 +59,17 @@ fn main() {
             let s = format!("{}[{}]", note, duration);
             print!("{} ", s);
 
-            if need_play {
+            if let Some(channels) = channels.as_mut() {
                 let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
                     .midi_number()
                     .unwrap()];
-                midi_player.play_notes(1, &tuning_midi);
+                channels[1].play_notes(&tuning_midi);
                 sleep(Duration::from_millis((duration_value * 80.0 * 32.0) as u64));
-                midi_player.stop_notes(1, &tuning_midi);
+                channels[1].stop_notes(&tuning_midi);
             }
         }
-        if need_play {
-            midi_player.stop_notes(2, &chord_notes_midi);
+        if let Some(channels) = channels.as_mut() {
+            channels[2].stop_notes(&chord_notes_midi);
         }
         println!("|");
     }
