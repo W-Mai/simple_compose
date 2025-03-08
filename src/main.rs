@@ -117,18 +117,31 @@ mod tests {
 
     #[test]
     fn test_score_with_midi_player() {
-        let mut score = Score::<1>::new().with_tempo(140.0);
+        let mut score = Score::<2>::new().with_tempo(140.0);
         score.new_measures(|m| {
-            m[0].chord(Chord::triad(Tuning::new(PitchClass::C, 4), ChordQuality::Major).unwrap());
+            m[0].rest();
+            m[1].note(vec![
+                Note::new(PitchClass::C, 4).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::E, 4).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::G, 4).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::B, 4).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::D, 5).with_duration(DurationBase::Eighth.in_quarters()),
+            ]);
         });
         score.new_measures(|m| {
             m[0].chord(Chord::triad(Tuning::new(PitchClass::G, 4), ChordQuality::Major).unwrap());
+            m[1].chord(Chord::triad(Tuning::new(PitchClass::A, 4), ChordQuality::Major).unwrap());
         });
         score.new_measures(|m| {
-            m[0].chord(Chord::triad(Tuning::new(PitchClass::A, 4), ChordQuality::Major).unwrap());
-        });
-        score.new_measures(|m| {
-            m[0].chord(Chord::triad(Tuning::new(PitchClass::F, 4), ChordQuality::Major).unwrap());
+            m[0].note(vec![
+                Note::new(PitchClass::C, 4).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::E, 4).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::B, 4).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::G, 4).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::E, 4).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::C, 5).with_duration(DurationBase::Eighth.in_quarters()),
+            ]);
+            m[1].rest();
         });
 
         let mut midi_player = MidiPlayer::new("Simple Compose");
