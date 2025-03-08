@@ -130,7 +130,7 @@ mod tests {
         });
         score.new_measures(|m| {
             m[0].chord(Chord::triad(Tuning::new(PitchClass::G, 4), ChordQuality::Major).unwrap());
-            m[1].chord(Chord::triad(Tuning::new(PitchClass::A, 4), ChordQuality::Major).unwrap());
+            m[1].chord(Chord::triad(Tuning::new(PitchClass::B, 3), ChordQuality::Major).unwrap());
         });
         score.new_measures(|m| {
             m[0].note(vec![
