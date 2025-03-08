@@ -154,12 +154,12 @@ mod tests {
         let deg = degrees!(1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 1);
         let chords = deg.map(|degree| pitch_class.common_chord(degree, 3));
 
-        let mut score = Score::<2>::new().with_tempo(140.0);
+        let mut score = Score::<3>::new().with_tempo(140.0);
         let mut rng = thread_rng();
 
         (0..deg.len()).for_each(|i| {
             score.new_measures(|m| {
-                m[0].chord(chords[i].clone());
+                m[1].chord(chords[i].clone());
 
                 let chord_notes = chords[i].components();
                 let durations = duration_utils::generate_one_measure(1);
@@ -168,17 +168,18 @@ mod tests {
                     .map(|duration| {
                         let duration_value: f32 = duration.clone().into();
                         let tuning = chord_notes.choose(&mut rng).unwrap().clone();
-                        Note::new(tuning.class, tuning.octave).with_duration(duration_value * 4.0)
+                        Note::new(tuning.class, tuning.octave + 1)
+                            .with_duration(duration_value * 4.0)
                     })
                     .collect();
 
-                m[1].note(note_iter);
+                m[2].note(note_iter);
             })
         });
 
         let mut midi_player = MidiPlayer::new("Simple Compose");
         midi_player.play_score(score).unwrap();
-        
+
         midi_player.close();
     }
 }
