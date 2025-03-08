@@ -150,8 +150,8 @@ mod tests {
 
     #[test]
     fn test_random_measure() {
-        let pitch_class = PitchClass::DSharpOrEFlat;
-        let deg = degrees!(1 5 6 2 4 1 4 5 1);
+        let pitch_class = PitchClass::G;
+        let deg = degrees!(1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 1);
         let chords = deg.map(|degree| pitch_class.common_chord(degree, 3));
 
         let mut score = Score::<2>::new().with_tempo(140.0);
@@ -162,13 +162,13 @@ mod tests {
                 m[0].chord(chords[i].clone());
 
                 let chord_notes = chords[i].components();
-                let durations = duration_utils::generate_one_measure(4);
+                let durations = duration_utils::generate_one_measure(1);
                 let note_iter = durations
                     .iter()
                     .map(|duration| {
-                        let duration_value = duration.clone().into();
+                        let duration_value: f32 = duration.clone().into();
                         let tuning = chord_notes.choose(&mut rng).unwrap().clone();
-                        Note::new(tuning.class, tuning.octave).with_duration(duration_value)
+                        Note::new(tuning.class, tuning.octave).with_duration(duration_value * 4.0)
                     })
                     .collect();
 
@@ -178,5 +178,7 @@ mod tests {
 
         let mut midi_player = MidiPlayer::new("Simple Compose");
         midi_player.play_score(score).unwrap();
+        
+        midi_player.close();
     }
 }
