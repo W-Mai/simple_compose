@@ -30,13 +30,8 @@ fn main() {
     let measures = chords.map(|chord| {
         let chord_notes = chord
             .components()
-            .iter()
-            .map(|note| Note {
-                pitch_class: note.class,
-                octave: note.octave,
-                duration: Duration::from_quarters(1.0),
-                velocity: 0.0,
-            })
+            .into_iter()
+            .map(|tuning| Note::new(tuning))
             .collect::<Vec<_>>();
 
         let chord_tunings = chord.components();
@@ -77,14 +72,12 @@ fn main() {
                     .collect::<Vec<u8>>();
                 ch_chords.play_notes(&chord_notes_midi);
                 rhythm_notes.iter().for_each(|note| {
-                    let s = format!("{}[{}]", note, note.duration);
+                    let s = note.to_string();
                     print!("{} ", s);
-                    let tuning_midi = [Tuning::new(note.pitch_class, note.octave)
-                        .midi_number()
-                        .unwrap()];
+                    let tuning_midi = [note.tuning().midi_number().unwrap()];
                     ch_rhythm.play_notes(&tuning_midi);
                     sleep(std::time::Duration::from_millis(
-                        (note.duration.in_quarters() * 80.0 * 32.0) as u64,
+                        (note.duration().in_quarters() * 80.0 * 32.0) as u64,
                     ));
                     ch_rhythm.stop_notes(&tuning_midi);
                 });
@@ -102,7 +95,7 @@ fn main() {
              }| {
                 print!("{} {:?} | ", chord_notes[0].class, chord.quality());
                 rhythm_notes.iter().for_each(|note| {
-                    let s = format!("{}[{}]", note, note.duration);
+                    let s = note.to_string();
                     print!("{} ", s);
                 });
                 println!("|");
@@ -124,11 +117,16 @@ mod tests {
         score.new_measures(|m| {
             m[0].rest();
             m[1].note(vec![
-                Note::new(PitchClass::C, 4).with_duration(Duration::new(DurationBase::Quarter)),
-                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Eighth)),
-                Note::new(PitchClass::G, 4).with_duration(Duration::new(DurationBase::Eighth)),
-                Note::new(PitchClass::B, 4).with_duration(Duration::new(DurationBase::Eighth)),
-                Note::new(PitchClass::D, 5).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::C, 4))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::E, 4))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::G, 4))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::B, 4))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::D, 5))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
             ]);
         });
         score.new_measures(|m| {
@@ -137,12 +135,18 @@ mod tests {
         });
         score.new_measures(|m| {
             m[0].note(vec![
-                Note::new(PitchClass::C, 4).with_duration(Duration::new(DurationBase::Quarter)),
-                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Quarter)),
-                Note::new(PitchClass::B, 4).with_duration(Duration::new(DurationBase::Eighth)),
-                Note::new(PitchClass::G, 4).with_duration(Duration::new(DurationBase::Eighth)),
-                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Eighth)),
-                Note::new(PitchClass::C, 5).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::C, 4))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::E, 4))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::B, 4))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::G, 4))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::E, 4))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(Tuning::new(PitchClass::C, 5))
+                    .with_duration(Duration::new(DurationBase::Eighth)),
             ]);
             m[1].rest();
         });
@@ -159,10 +163,14 @@ mod tests {
         score.new_measures(|m| {
             m[0].rest();
             m[1].note(vec![
-                Note::new(PitchClass::C, 4).with_duration(Duration::new(DurationBase::Quarter)),
-                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Quarter)),
-                Note::new(PitchClass::G, 4).with_duration(Duration::new(DurationBase::Quarter)),
-                Note::new(PitchClass::C, 5).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::C, 4))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::E, 4))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::G, 4))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(Tuning::new(PitchClass::C, 5))
+                    .with_duration(Duration::new(DurationBase::Quarter)),
             ]);
         });
 
@@ -190,7 +198,8 @@ mod tests {
                     .iter()
                     .map(|duration| {
                         let tuning = chord_notes.choose(&mut rng).unwrap().clone();
-                        Note::new(tuning.class, tuning.octave + 1).with_duration(duration.clone())
+                        Note::new(tuning.add_interval(&Interval::from_semitones(12).unwrap()))
+                            .with_duration(duration.clone())
                     })
                     .collect();
 
