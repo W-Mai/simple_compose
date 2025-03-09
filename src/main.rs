@@ -1,6 +1,5 @@
 use rand::prelude::*;
 use std::thread::sleep;
-use std::time::Duration;
 
 use simple_compose::*;
 
@@ -35,7 +34,7 @@ fn main() {
             .map(|note| Note {
                 pitch_class: note.class,
                 octave: note.octave,
-                duration: 0.0,
+                duration: Duration::from_quarters(1.0),
                 velocity: 0.0,
             })
             .collect::<Vec<_>>();
@@ -84,7 +83,9 @@ fn main() {
                         .midi_number()
                         .unwrap()];
                     ch_rhythm.play_notes(&tuning_midi);
-                    sleep(Duration::from_millis((note.duration * 80.0 * 32.0) as u64));
+                    sleep(std::time::Duration::from_millis(
+                        (note.duration.in_quarters() * 80.0 * 32.0) as u64,
+                    ));
                     ch_rhythm.stop_notes(&tuning_midi);
                 });
                 ch_chords.stop_notes(&chord_notes_midi);
@@ -123,11 +124,11 @@ mod tests {
         score.new_measures(|m| {
             m[0].rest();
             m[1].note(vec![
-                Note::new(PitchClass::C, 4).with_duration(DurationBase::Quarter.in_quarters()),
-                Note::new(PitchClass::E, 4).with_duration(DurationBase::Eighth.in_quarters()),
-                Note::new(PitchClass::G, 4).with_duration(DurationBase::Eighth.in_quarters()),
-                Note::new(PitchClass::B, 4).with_duration(DurationBase::Eighth.in_quarters()),
-                Note::new(PitchClass::D, 5).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::C, 4).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(PitchClass::G, 4).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(PitchClass::B, 4).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(PitchClass::D, 5).with_duration(Duration::new(DurationBase::Eighth)),
             ]);
         });
         score.new_measures(|m| {
@@ -136,12 +137,12 @@ mod tests {
         });
         score.new_measures(|m| {
             m[0].note(vec![
-                Note::new(PitchClass::C, 4).with_duration(DurationBase::Quarter.in_quarters()),
-                Note::new(PitchClass::E, 4).with_duration(DurationBase::Quarter.in_quarters()),
-                Note::new(PitchClass::B, 4).with_duration(DurationBase::Eighth.in_quarters()),
-                Note::new(PitchClass::G, 4).with_duration(DurationBase::Eighth.in_quarters()),
-                Note::new(PitchClass::E, 4).with_duration(DurationBase::Eighth.in_quarters()),
-                Note::new(PitchClass::C, 5).with_duration(DurationBase::Eighth.in_quarters()),
+                Note::new(PitchClass::C, 4).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(PitchClass::B, 4).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(PitchClass::G, 4).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Eighth)),
+                Note::new(PitchClass::C, 5).with_duration(Duration::new(DurationBase::Eighth)),
             ]);
             m[1].rest();
         });
@@ -158,10 +159,10 @@ mod tests {
         score.new_measures(|m| {
             m[0].rest();
             m[1].note(vec![
-                Note::new(PitchClass::C, 4).with_duration(DurationBase::Quarter.in_quarters()),
-                Note::new(PitchClass::E, 4).with_duration(DurationBase::Quarter.in_quarters()),
-                Note::new(PitchClass::G, 4).with_duration(DurationBase::Quarter.in_quarters()),
-                Note::new(PitchClass::C, 5).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::C, 4).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(PitchClass::E, 4).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(PitchClass::G, 4).with_duration(Duration::new(DurationBase::Quarter)),
+                Note::new(PitchClass::C, 5).with_duration(Duration::new(DurationBase::Quarter)),
             ]);
         });
 
@@ -188,9 +189,8 @@ mod tests {
                 let note_iter = durations
                     .iter()
                     .map(|duration| {
-                        let duration_value: f32 = duration.in_quarters();
                         let tuning = chord_notes.choose(&mut rng).unwrap().clone();
-                        Note::new(tuning.class, tuning.octave + 1).with_duration(duration_value)
+                        Note::new(tuning.class, tuning.octave + 1).with_duration(duration.clone())
                     })
                     .collect();
 
