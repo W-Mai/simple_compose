@@ -117,7 +117,9 @@ mod tests {
 
     #[test]
     fn test_score_with_midi_player() {
-        let mut score = Score::<2>::new().with_tempo(140.0);
+        let mut score = Score::<2>::new()
+            .with_tempo(140.0)
+            .with_time_signature((4, 4));
         score.new_measures(|m| {
             m[0].rest();
             m[1].note(vec![
@@ -149,12 +151,32 @@ mod tests {
     }
 
     #[test]
+    fn test_score_with_midi_player_2() {
+        let mut score = Score::<2>::new()
+            .with_tempo(180.0)
+            .with_time_signature((4, 4));
+        score.new_measures(|m| {
+            m[0].rest();
+            m[1].note(vec![
+                Note::new(PitchClass::C, 4).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::E, 4).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::G, 4).with_duration(DurationBase::Quarter.in_quarters()),
+                Note::new(PitchClass::C, 5).with_duration(DurationBase::Quarter.in_quarters()),
+            ]);
+        });
+
+        let mut midi_player = MidiPlayer::new("Simple Compose");
+        midi_player.play_score(score).unwrap();
+        midi_player.close();
+    }
+
+    #[test]
     fn test_random_measure() {
         let pitch_class = PitchClass::G;
-        let deg = degrees!(1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 5 6 2 4 1 4 5 1 1);
-        let chords = deg.map(|degree| pitch_class.common_chord(degree, 3));
+        let deg = degrees!(1 5 6 2 4 1 );
+        let chords = deg.map(|degree| pitch_class.common_chord(degree, 4));
 
-        let mut score = Score::<2>::new().with_tempo(140.0);
+        let mut score = Score::<2>::new().with_tempo(60.0);
         let mut rng = thread_rng();
 
         (0..deg.len()).for_each(|i| {
