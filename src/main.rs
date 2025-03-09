@@ -9,18 +9,18 @@ macro_rules! degrees {
     };
 }
 
-struct Measure {
-    chord: Chord,
-    chord_notes: Vec<Tuning>,
-    rhythm_notes: Vec<Note>,
-}
-
 ///
 /// ```plaintext
 /// PitchClass ----------------> Chord -------------> Note
 ///         common_chord()          breakdown()
 /// ```
 fn main() {
+    struct Measure {
+        chord: Chord,
+        chord_notes: Vec<Tuning>,
+        rhythm_notes: Vec<Note>,
+    }
+
     let pitch_class = PitchClass::DSharpOrEFlat;
     let deg = degrees!(1 1 4 5 1 4 1);
     let chords = deg.map(|degree| pitch_class.common_chord(degree, 3));
