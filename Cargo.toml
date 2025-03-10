@@ -6,5 +6,11 @@ authors = ["Benign X <1341398182@qq.com>"]
 
 [dependencies]
 rand = "0.8.5"
-midir = "0.10.0"
-thiserror = "2.0.11"
+
+mutheors = { git = "https://github.com/W-Mai/mutheors.git", features = ["midi_io"] }
+
+[patch.crates-io]
+mutheors = { path = "../mutheors" }
+
+[patch."https://github.com/W-Mai/mutheors.git"]
+mutheors = { path = "../mutheors" }

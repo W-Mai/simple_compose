@@ -1,7 +1,7 @@
 use rand::prelude::*;
 use std::thread::sleep;
 
-use simple_compose::*;
+use mutheors::*;
 
 macro_rules! degrees {
     ($($degree:expr)*) => {
