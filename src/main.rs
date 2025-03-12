@@ -31,7 +31,7 @@ fn main() {
             let note_iter = durations
                 .iter()
                 .map(|duration| {
-                    let tuning = chord_notes.choose(&mut rng).unwrap().clone();
+                    let tuning = chord_notes.choose(&mut rng).unwrap();
                     Note::new(tuning.add_interval(&Interval::from_semitones(12).unwrap()))
                         .with_duration(duration.clone())
                 })
