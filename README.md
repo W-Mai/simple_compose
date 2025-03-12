@@ -1,9 +1,7 @@
 # Simple Compose - 基于Rust的智能音乐生程序
 
-<div align="center">
 [![EN](https://img.shields.io/badge/LANG-English-blue)](README.md)
 [![CN](https://img.shields.io/badge/语言-简体中文-red)](README.zh-CN.md)
-</div>
 
 ![Rust Version](https://img.shields.io/badge/rust-1.68%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
