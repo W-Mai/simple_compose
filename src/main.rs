@@ -55,10 +55,6 @@ fn main() {
         });
     }
 
-    // Instantiate the MidiPlayer
-    let mut midi_player = MidiPlayer::new("Simple Compose");
     // Play the score
-    midi_player.play_score(score).unwrap();
-    // Close the MidiPlayer
-    midi_player.close();
+    score.play("Simple Compose").unwrap()
 }
