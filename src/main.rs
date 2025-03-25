@@ -2,8 +2,8 @@ use mutheors::duration_utils::DurationProgress;
 use mutheors::*;
 
 macro_rules! degrees {
-    ($pitch_class:expr => $($degree:expr)*) => {
-        [$($degree),*].map(|degree| $pitch_class.common_chord(degree, 4))
+    ($scale:expr => $($degree:expr)*) => {
+        [$($degree),*].map(|degree| $scale.degree_chord(degree).unwrap())
     };
 }
 
@@ -24,6 +24,7 @@ fn main() {
         PitchClass::G,
         PitchClass::C,
     ];
+    let scale_types = [ScaleType::Major, ScaleType::NaturalMinor];
 
     // Declares a score with 2 tracks
     // and a tempo of Vivace
@@ -41,7 +42,8 @@ fn main() {
         // Generate the chord for each pitch class
         // Current it will generate a chord sequence of
         // 1 1 4 5 1 4 1 degrees
-        let chords = degrees!(pitch_class
+        let scale = Tuning::new(pitch_class, 4).scale(scale_types[pitch_class as usize % 2]);
+        let chords = degrees!(scale
             => 1 1 4 5 1 4 1
         );
 
