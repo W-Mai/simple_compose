@@ -1,3 +1,4 @@
+use mutheors::duration_utils::DurationProgress;
 use mutheors::*;
 
 macro_rules! degrees {
@@ -50,7 +51,12 @@ fn main() {
                 // Set the first track to play the chord
                 m[0].chord(chords[i].clone());
                 // Set the second track to play the notes of the chord randomly
-                m[1] = duration_utils::generate_one_measure(&dg, chords[i].clone(), BEAT);
+                m[1] = duration_utils::generate_one_measure(
+                    &dg,
+                    chords[i].clone(),
+                    BEAT,
+                    DurationProgress::Fixed(vec![1.0, 0.5, 0.5, 1.0]),
+                );
             })
         });
     }
